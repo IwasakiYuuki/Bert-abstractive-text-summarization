@@ -16,9 +16,7 @@ def paired_collate_fn(insts):
 def src_collate_fn(insts):
     ''' Pad the instance to the max seq length in batch '''
 
-    max_len = max(len(inst) for inst in insts)
-    if max_len > config.max_src_size:
-        max_len = config.max_src_size
+    max_len = config.max_src_size
 
     batch_seq = np.array([
         inst + [Constants.PAD] * (max_len - len(inst))

@@ -77,7 +77,6 @@ def train_epoch(model, training_data, optimizer, device, smoothing, step):
         # forward
         optimizer.zero_grad()
         pred, a, p_gen = model(src_seq, src_pos, tgt_seq, tgt_pos)
-        print(pred.size())
 
         # backward
         loss, n_correct = cal_performance(pred, a, p_gen, src_seq, gold, smoothing=smoothing)
@@ -302,7 +301,7 @@ def prepare_dataloaders(data, opt):
 
 
 if __name__ == '__main__':
-    writer = tbx.SummaryWriter()
+    writer = tbx.SummaryWriter(log_dir='data/tensorboardx/runs')
     main()
     writer.export_scalars_to_json("data/all_scalars.json")
     writer.close()
