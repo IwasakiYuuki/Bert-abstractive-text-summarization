@@ -62,7 +62,10 @@ overall directory structure is as follow:
 python train.py -data data/preprocessed_data.data -bert_path data/checkpoint/ -proj_share_weight -label_smoothing -batch_size 4 -epoch 10 -save_model trained -save_mode best
 ```
 
-## Future works
+## TODO
 - Eval the model with score such as ROUGE-N
 - Upload train log graph using TensorboardX
 - Make some examples
+
+## Acknowledge
+- This repository structure and most codes are borrowed from [jadore801120/attention-is-all-you-need-pytorch](https://github.com/jadore801120/attention-is-all-you-need-pytorch).
