@@ -6,16 +6,18 @@
 """
 
 import torch
-import numpy as np
 import transformer.Constants as Constants
 
-class Beam():
-    ''' Beam search '''
 
-    def __init__(self, size, device=False):
+class Beam(object):
+    """ Beam search """
+
+    def __init__(self, size, block_ngram_repeat=3, exclusion_tokens=set(), device=False):
 
         self.size = size
         self._done = False
+        self.block_ngram_repeat = block_ngram_repeat
+        self.exclusion_tokens = exclusion_tokens
 
         # The score for each translation on the beam.
         self.scores = torch.zeros((size,), dtype=torch.float, device=device)
@@ -29,11 +31,11 @@ class Beam():
         self.next_ys[0][0] = Constants.BOS
 
     def get_current_state(self):
-        "Get the outputs for the current timestep."
+        """Get the outputs for the current timestep."""
         return self.get_tentative_hypothesis()
 
     def get_current_origin(self):
-        "Get the backpointers for the current timestep."
+        """Get the backpointers for the current timestep."""
         return self.prev_ks[-1]
 
     @property
@@ -41,12 +43,32 @@ class Beam():
         return self._done
 
     def advance(self, word_prob):
-        "Update beam status and check if finished or not."
+        """Update beam status and check if finished or not."""
         num_words = word_prob.size(1)
 
         # Sum the previous scores.
         if len(self.prev_ks) > 0:
             beam_lk = word_prob + self.scores.unsqueeze(1).expand_as(word_prob)
+            # Block ngram repeats
+            if self.block_ngram_repeat > 0:
+                le = len(self.next_ys)
+                for j in range(self.next_ys[-1].size(0)):
+                    hyp = self.get_hyp(le - 1, j)
+                    ngrams = set()
+                    fail = False
+                    gram = []
+                    for i in range(le - 1):
+                        # Last n tokens, n = block_ngram_repeat
+                        gram = (gram +
+                                [hyp[i].item()])[-self.block_ngram_repeat:]
+                        # Skip the blocking if it is in the exclusion list
+                        if set(gram) & self.exclusion_tokens:
+                            continue
+                        if tuple(gram) in ngrams:
+                            fail = True
+                        ngrams.add(tuple(gram))
+                    if fail:
+                        beam_lk[j] = -10e20
         else:
             beam_lk = word_prob[0]
 
@@ -72,16 +94,16 @@ class Beam():
         return self._done
 
     def sort_scores(self):
-        "Sort the scores."
+        """Sort the scores."""
         return torch.sort(self.scores, 0, True)
 
     def get_the_best_score_and_idx(self):
-        "Get the score of the best in the beam."
+        """Get the score of the best in the beam."""
         scores, ids = self.sort_scores()
         return scores[1], ids[1]
 
     def get_tentative_hypothesis(self):
-        "Get the decoded sequence for the current timestep."
+        """Get the decoded sequence for the current timestep."""
 
         if len(self.next_ys) == 1:
             dec_seq = self.next_ys[0].unsqueeze(1)
@@ -92,6 +114,14 @@ class Beam():
             dec_seq = torch.LongTensor(hyps)
 
         return dec_seq
+
+    def get_hyp(self, timestep, k):
+        """Walk back to construct the full hypothesis."""
+        hyp = []
+        for j in range(len(self.prev_ks[:timestep]) - 1, -1, -1):
+            hyp.append(self.next_ys[j + 1][k])
+            k = self.prev_ks[j][k]
+        return hyp[::-1]
 
     def get_hypothesis(self, k):
         """ Walk back to construct the full hypothesis. """

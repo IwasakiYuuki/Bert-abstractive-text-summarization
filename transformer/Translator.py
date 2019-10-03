@@ -4,13 +4,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from transformer.Models import Transformer
-from models import AbstractiveTextSummarization
+from models import AbstractiveTextSummarizationUsingBert
 from transformer.Beam import Beam
 
-class Translator(object):
-    ''' Load with trained model and handle the beam search '''
 
+class Summarizer(object):
     def __init__(self, opt):
         self.opt = opt
         self.device = torch.device('cuda' if opt.cuda else 'cpu')
@@ -19,33 +17,18 @@ class Translator(object):
         model_opt = checkpoint['settings']
         self.model_opt = model_opt
 
-#        model = Transformer(
-#            model_opt.src_vocab_size,
-#            model_opt.tgt_vocab_size,
-#            model_opt.max_token_seq_len,
-#            tgt_emb_prj_weight_sharing=model_opt.proj_share_weight,
-#            emb_src_tgt_weight_sharing=model_opt.embs_share_weight,
-#            d_k=model_opt.d_k,
-#            d_v=model_opt.d_v,
-#            d_model=model_opt.d_model,
-#            d_word_vec=model_opt.d_word_vec,
-#            d_inner=model_opt.d_inner_hid,
-#            n_layers=model_opt.n_layers,
-#            n_head=model_opt.n_head,
-#            dropout=model_opt.dropout)
-        model = AbstractiveTextSummarization(
-	    model_opt.bert_path,
-	    model_opt.tgt_vocab_size,
-       	    model_opt.max_token_seq_len,
-      	    d_k=model_opt.d_k,
-      	    d_v=model_opt.d_v,
-      	    d_model=model_opt.d_model,
-      	    d_word_vec=model_opt.d_word_vec,
-      	    d_inner=model_opt.d_inner_hid,
-      	    n_layers=model_opt.n_layers,
-      	    n_head=model_opt.n_head,
-      	    dropout=model_opt.dropout)
-
+        model = AbstractiveTextSummarizationUsingBert(
+            model_opt.bert_path,
+            model_opt.tgt_vocab_size,
+            model_opt.max_token_seq_len,
+            d_k=model_opt.d_k,
+            d_v=model_opt.d_v,
+            d_model=model_opt.d_model,
+            d_word_vec=model_opt.d_word_vec,
+            d_inner=model_opt.d_inner_hid,
+            n_layers=model_opt.n_layers,
+            n_head=model_opt.n_head,
+            dropout=model_opt.dropout)
 
         model.load_state_dict(checkpoint['model'])
         print('[Info] Trained model state loaded.')
@@ -58,15 +41,11 @@ class Translator(object):
         self.model.eval()
 
     def translate_batch(self, src_seq, src_pos):
-        ''' Translation work in one batch '''
 
         def get_inst_idx_to_tensor_position_map(inst_idx_list):
-            ''' Indicate the position of an instance in a tensor. '''
             return {inst_idx: tensor_position for tensor_position, inst_idx in enumerate(inst_idx_list)}
 
         def collect_active_part(beamed_tensor, curr_active_inst_idx, n_prev_active_inst, n_bm):
-            ''' Collect tensor parts associated to active instances. '''
-
             _, *d_hs = beamed_tensor.size()
             n_curr_active_inst = len(curr_active_inst_idx)
             new_shape = (n_curr_active_inst * n_bm, *d_hs)
@@ -93,8 +72,6 @@ class Translator(object):
 
         def beam_decode_step(
                 inst_dec_beams, len_dec_seq, src_seq, enc_output, inst_idx_to_position_map, n_bm):
-            ''' Decode and update beam status, and then return active beam idx '''
-
             def prepare_beam_dec_seq(inst_dec_beams, len_dec_seq):
                 dec_partial_seq = [b.get_current_state() for b in inst_dec_beams if not b.done]
                 dec_partial_seq = torch.stack(dec_partial_seq).to(self.device)
