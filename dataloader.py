@@ -10,7 +10,7 @@ def paired_collate_fn(insts):
     src_insts, tgt_insts = list(zip(*insts))
     src_insts = src_collate_fn(src_insts)
     tgt_insts = tgt_collate_fn(tgt_insts)
-    return *src_insts, *tgt_insts
+    return (*src_insts, *tgt_insts)
 
 
 def src_collate_fn(insts):
