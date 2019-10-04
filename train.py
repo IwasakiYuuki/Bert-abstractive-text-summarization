@@ -187,10 +187,10 @@ def train(model, training_data, validation_data, optimizer, device, opt):
 
         if opt.save_model:
             if opt.save_mode == 'all':
-                model_name = 'checkpoint/trained/' + opt.save_model + '_accu_{accu:3.3f}.chkpt'.format(accu=100*valid_accu)
+                model_name = 'data/checkpoint/trained/' + opt.save_model + '_accu_{accu:3.3f}.chkpt'.format(accu=100*valid_accu)
                 torch.save(checkpoint, model_name)
             elif opt.save_mode == 'best':
-                model_name = 'checkpoint/trained/' + opt.save_model + '.chkpt'
+                model_name = 'data/checkpoint/trained/' + opt.save_model + '.chkpt'
                 if valid_accu >= max(valid_accus):
                     torch.save(checkpoint, model_name)
                     print('    - [Info] The checkpoint file has been updated.')
