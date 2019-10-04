@@ -18,10 +18,10 @@ import tensorboardX as tbx
 from models import AbstractiveTextSummarizationUsingBert
 
 
-def cal_performance(pred, a, p_gen, x, gold, smoothing=False):
+def cal_performance(pred, x, gold, smoothing=False):
     ''' Apply label smoothing if needed '''
 
-    loss = cal_loss(pred, a, p_gen, x, gold, smoothing)
+    loss = cal_loss(pred, x, gold, smoothing)
 
     pred = pred.max(1)[1]
     gold = gold.contiguous().view(-1)
@@ -32,7 +32,7 @@ def cal_performance(pred, a, p_gen, x, gold, smoothing=False):
     return loss, n_correct
 
 
-def cal_loss(pred, a, p_gen, x, gold, smoothing):
+def cal_loss(pred, x, gold, smoothing):
     ''' Calculate cross entropy loss, apply label smoothing if needed. '''
 
     gold = gold.contiguous().view(-1)
@@ -43,10 +43,11 @@ def cal_loss(pred, a, p_gen, x, gold, smoothing):
 
         one_hot = torch.zeros_like(pred).scatter(1, gold.view(-1, 1), 1)
         one_hot = one_hot * (1 - eps) + (1 - one_hot) * eps / (n_class - 1)
-        x = x.repeat(1, int(a.size(0)/x.size(0))).view(-1, a.size(1))
-        prb = (1-p_gen)*F.softmax(pred, dim=1)
-        a = p_gen*F.softmax(a, dim=1)
-        prb = prb.scatter_add(1, x, a)
+#        x = x.repeat(1, int(a.size(0)/x.size(0))).view(-1, a.size(1))
+#        prb = (1-p_gen)*F.softmax(pred, dim=1)
+#        a = p_gen*F.softmax(a, dim=1)
+        prb = F.softmax(pred, dim=1)
+#        prb = prb.scatter_add(1, x, a)
         log_prb = torch.log(prb)
         non_pad_mask = gold.ne(Constants.PAD)
         loss = -(one_hot * log_prb).sum(dim=1)
@@ -76,10 +77,11 @@ def train_epoch(model, training_data, optimizer, device, smoothing, step):
 
         # forward
         optimizer.zero_grad()
-        pred, a, p_gen = model(src_seq, src_pos, tgt_seq, tgt_pos)
+#        pred, a, p_gen = model(src_seq, src_pos, tgt_seq, tgt_pos)
+        pred = model(src_seq, src_pos, tgt_seq, tgt_pos)
 
         # backward
-        loss, n_correct = cal_performance(pred, a, p_gen, src_seq, gold, smoothing=smoothing)
+        loss, n_correct = cal_performance(pred, src_seq, gold, smoothing=smoothing)
         loss.backward()
 
         # update parameters
@@ -119,8 +121,8 @@ def eval_epoch(model, validation_data, device, step):
             gold = tgt_seq[:, 1:]
 
             # forward
-            pred, a, p_gen = model(src_seq, src_pos, tgt_seq, tgt_pos)
-            loss, n_correct = cal_performance(pred, a, p_gen, src_seq, gold, smoothing=False)
+            pred = model(src_seq, src_pos, tgt_seq, tgt_pos)
+            loss, n_correct = cal_performance(pred, src_seq, gold, smoothing=False)
 
             # note keeping
             total_loss += loss.item()

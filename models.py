@@ -36,12 +36,12 @@ class AbstractiveTextSummarizationUsingBert(nn.Module):
         enc_output, _ = self.encoder(src_seq, src_sen, output_all_encoded_layers=False)
         dec_output, *_ = self.decoder(tgt_seq, tgt_pos, src_seq, enc_output)
 
-        o = self.o_l(dec_output)
-        p_gen = torch.sigmoid(self.h_l(o).view(-1, 1))
+#        o = self.o_l(dec_output)
+#        p_gen = torch.sigmoid(self.h_l(o).view(-1, 1))
 
         seq_logit = self.tgt_word_prj(dec_output) * self.x_logit_scale
-        a = self.a_l_1(dec_output)
-        a = torch.bmm(a, enc_output)
-        a = self.a_l_2(a)
+#        a = self.a_l_1(dec_output)
+#        a = torch.bmm(a, enc_output)
+#        a = self.a_l_2(a)
 
-        return seq_logit.view(-1, seq_logit.size(2)), a.view(-1, a.size(2)), p_gen
+        return seq_logit.view(-1, seq_logit.size(2))
