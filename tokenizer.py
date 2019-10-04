@@ -122,7 +122,7 @@ def load_vocab(vocab_file):
     """Loads a vocabulary file into a dictionary."""
     vocab = collections.OrderedDict()
     index = 0
-    with tf.gfile.GFile(vocab_file, "r") as reader:
+    with tf.io.gfile.GFile(vocab_file, "r") as reader:
         while True:
             token = convert_to_unicode(reader.readline())
             if not token:
@@ -159,28 +159,29 @@ def whitespace_tokenize(text):
 
 
 class FullTokenizer(object):
-    """Runs end-to-end tokenziation."""
+  """Runs end-to-end tokenziation."""
 
-    def __init__(self, vocab_file, do_lower_case=True):
-        self.vocab = load_vocab(vocab_file)
-        self.inv_vocab = {v: k for k, v in self.vocab.items()}
-        #self.basic_tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
-        self.juman_tokenizer = JumanTokenizer()
-        self.wordpiece_tokenizer = WordpieceTokenizer(vocab=self.vocab)
+  def __init__(self, vocab_file, do_lower_case=True):
+    self.vocab = load_vocab(vocab_file)
+    self.inv_vocab = {v: k for k, v in self.vocab.items()}
+    #self.tokenizer = BasicTokenizer(do_lower_case=do_lower_case)
+    #self.tokenizer = JumanTokenizer()
+    self.tokenizer = MeCabTokenizer()
+    self.wordpiece_tokenizer = WordpieceTokenizer(vocab=self.vocab)
 
-    def tokenize(self, text):
-        split_tokens = []
-        for token in self.juman_tokenizer.tokenize(text):
-            for sub_token in self.wordpiece_tokenizer.tokenize(token):
-                split_tokens.append(sub_token)
+  def tokenize(self, text):
+    split_tokens = []
+    for token in self.tokenizer.tokenize(text):
+      for sub_token in self.wordpiece_tokenizer.tokenize(token):
+        split_tokens.append(sub_token)
 
-        return split_tokens
+    return split_tokens
 
-    def convert_tokens_to_ids(self, tokens):
-        return convert_by_vocab(self.vocab, tokens)
+  def convert_tokens_to_ids(self, tokens):
+    return convert_by_vocab(self.vocab, tokens)
 
-    def convert_ids_to_tokens(self, ids):
-        return convert_by_vocab(self.inv_vocab, ids)
+  def convert_ids_to_tokens(self, ids):
+    return convert_by_vocab(self.inv_vocab, ids)
 
 
 class BasicTokenizer(object):
@@ -319,6 +320,25 @@ class JumanTokenizer(BasicTokenizer):
 
         output_tokens = whitespace_tokenize(" ".join(split_tokens))
         return output_tokens
+
+
+class MeCabTokenizer(BasicTokenizer):
+  def __init__(self):
+    import MeCab
+
+    self.do_lower_case = False
+    self._mecab = MeCab.Tagger('-Owakati')
+
+  def tokenize(self, text):
+    """Tokenizes a piece of text with Juman."""
+
+    text = convert_to_unicode(text)
+    text = self._clean_text(text)
+
+    mecab_result = self._mecab.parse(text)
+    output_tokens = mecab_result.split(' ')
+    return output_tokens
+
 
 
 class WordpieceTokenizer(object):

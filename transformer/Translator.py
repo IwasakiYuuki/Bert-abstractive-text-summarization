@@ -18,7 +18,8 @@ class Summarizer(object):
         self.model_opt = model_opt
 
         model = AbstractiveTextSummarizationUsingBert(
-            model_opt.bert_path,
+#            model_opt.bert_path,
+            'data/checkpoint/',
             model_opt.tgt_vocab_size,
             model_opt.max_token_seq_len,
             d_k=model_opt.d_k,

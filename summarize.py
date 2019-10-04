@@ -33,7 +33,7 @@ def main():
     opt.cuda = not opt.no_cuda
 
     # Prepare DataLoader
-    data = torch.load('data/preprocessed_data.data')
+    data = torch.load(opt.src)
     data['settings'].cuda = opt.cuda
 
     test_loader = torch.utils.data.DataLoader(
@@ -48,8 +48,6 @@ def main():
         batch_size=opt.batch_size,
         collate_fn=src_collate_fn)
     translator = Summarizer(opt)
-    print(''.join([test_loader.dataset.tgt_idx2word[idx] for idx in data['valid']['tgt'][0]]))
-    print(''.join([test_loader.dataset.tgt_idx2word[idx] for idx in data['valid']['tgt'][1]]))
     with open(opt.output, 'w') as f:
         for batch in tqdm(test_loader, mininterval=2, desc='  - (Test)', leave=False):
             all_hyp, all_scores = translator.translate_batch(*batch)
