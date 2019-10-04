@@ -5,9 +5,11 @@ This is the models using BERT (refer the paper [Pretraining-Based Natural Langua
 ## Requirements
 - Python 3.6.5+
 - Pytorch 0.4.1+
+- Tensorflow
+- Pandas
 - tqdm
 - Numpy
-- Juman++
+- MeCab
 - Tensorboard X and others...
 
 All packages used here can be installed by pip as follow:
@@ -15,8 +17,6 @@ All packages used here can be installed by pip as follow:
 ~~~
 pip install -r requirement.txt
 ~~~
-
-please refer [here](http://nlp.ist.i.kyoto-u.ac.jp/index.php?BERT%E6%97%A5%E6%9C%AC%E8%AA%9EPretrained%E3%83%A2%E3%83%87%E3%83%AB) when installing Juman++.
 
 ## Docker
 If you train the model with GPU, it is easy to use [Pytorch docker images](https://hub.docker.com/r/pytorch/pytorch) in DockerHub.
@@ -55,11 +55,29 @@ overall directory structure is as follow:
     |   `-- vocab.txt           # vocabulary file
     `-- preprocessed_data.data  # train and valid data file
 ```
+## Setting
+|Name   |Value   |
+|---|---|
+|Encoder   |BERT   |
+|Decoder   |Transformer (Only Decoder)   |
+|Embed dimension   |768   |
+|Hidden dimension   |3072   |
+|Encoder layers   |12   |
+|Decoder layers   |8   |
+|Optimizer   |Adam   |
+|Learning rate   |init=0.0001   |
+|Wormup step  |4000   |
+|Input max length   |512   |
+|Batch size   |4   |
 
 ## Usage
 ### Train the model
 ```
 python train.py -data data/preprocessed_data.data -bert_path data/checkpoint/ -proj_share_weight -label_smoothing -batch_size 4 -epoch 10 -save_model trained -save_mode best
+```
+### Generate summarization with trained model
+```
+python summarize.py -model data/checkpoint/trained/trained.chkpt -src data/preprocessed_data.data -vocab data/checkpoint/vocab.txt -output pred.txt
 ```
 
 ## TODO
