@@ -80,6 +80,11 @@ python train.py -data data/preprocessed_data.data -bert_path data/checkpoint/ -p
 python summarize.py -model data/checkpoint/trained/trained.chkpt -src data/preprocessed_data.data -vocab data/checkpoint/vocab.txt -output pred.txt
 ```
 
+## Resut
+### Tensorboard X image
+![image](https://user-images.githubusercontent.com/24263438/66286505-cd044800-e90c-11e9-8bb8-659173def48d.png)
+
+
 ## TODO
 - Eval the model with score such as ROUGE-N
 - Upload train log graph using TensorboardX
