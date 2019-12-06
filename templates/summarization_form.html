@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid bg-light">
+	<div class="row-fluid">
+		<div class="span12">
+			<form method="POST">
+			<label class="form-control-label pt-3 pb-0 mb-1 h4">Source text</label>
+			<textarea class="form-control" name="source_text">
+			</textarea>
+				{% if summary %}
+			<label class="form-control-label pt-3 pb-0 mb-1 h4">
+				Summary
+			</label>
+			<div class="border" style="padding:10px;">
+                {{ summary }}
+			</div>
+				{% endif %}
+			<button type="submit" class="btn btn-primary mb-2 mt-3">summarize</button>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}
