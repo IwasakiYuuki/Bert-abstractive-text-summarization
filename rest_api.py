@@ -49,6 +49,7 @@ def summarization():
 
     data_loader = preprocess(json_data)
     summaries = summarize(data_loader)
+    summaries = remove_symbol(summaries)
 
     return jsonify({
         'summaries': summaries,
@@ -204,6 +205,24 @@ def summarize(data_loader):
                     pred_lines.append(pred_line)
 
     return pred_lines
+
+
+def remove_symbol(texts):
+    """
+     Remove symbol "##", "[SEP]".
+
+    Args:
+        texts(list) : input text list
+
+    Returns:
+        removed_text(list): text list that removed symbol "##", "[SEP]"
+
+    """
+    removed_texts = []
+    for text in texts:
+        removed_texts.append(text.replace('##', '').replace('[SEP]', ''))
+
+    return removed_texts
 
 
 if __name__ == '__main__':
