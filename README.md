@@ -29,7 +29,7 @@ When you use this, please follow the steps below.
 And put bert_model, vocabulary file and config file for bert. 
 These files can be download [here](http://nlp.ist.i.kyoto-u.ac.jp/index.php?BERT%E6%97%A5%E6%9C%AC%E8%AA%9EPretrained%E3%83%A2%E3%83%87%E3%83%AB).
 
-2. Put data file for training and validate under /data/. The format is as follow:
+2. Put data file for training and validate under /workspace/data/. The format is as follow:
 
 ```preprocess.py
 data = {
@@ -48,7 +48,7 @@ torch.save(data, opt.save_data)
 
 overall directory structure is as follow:
 ```
-`-- data                        # under root 
+`-- data                        # under workspace 
     |-- checkpoint
     |   |-- bert_config.json    # BERT config file
     |   |-- pytorch_model.bin   # BERT model file
@@ -87,7 +87,6 @@ python summarize.py -model data/checkpoint/trained/trained.chkpt -src data/prepr
 
 ## TODO
 - Eval the model with score such as ROUGE-N
-- Upload train log graph using TensorboardX
 - Make some examples
 
 ## Acknowledge
