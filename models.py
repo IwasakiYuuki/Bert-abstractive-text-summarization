@@ -19,6 +19,14 @@ class AbstractiveTextSummarizationUsingBert(nn.Module):
         nn.init.xavier_normal_(self.tgt_word_prj.weight)
         self.tgt_word_prj.weight = self.decoder.tgt_word_emb.weight
         self.x_logit_scale = (d_model ** -0.5)
+        self.o_l = nn.Linear(d_model, 512, bias=False)
+        self.h_l = nn.Linear(512, 1, bias=True)
+        nn.init.xavier_normal_(self.o_l.weight)
+        nn.init.xavier_normal_(self.h_l.weight)
+        self.a_l_1 = nn.Linear(d_model, 512, bias=False)
+        self.a_l_2 = nn.Linear(d_model, 512, bias=False)
+        nn.init.xavier_normal_(self.a_l_1.weight)
+        nn.init.xavier_normal_(self.a_l_2.weight)
 
     def forward(self, src_seq, src_sen, tgt_seq, tgt_pos):
         tgt_seq, tgt_pos = tgt_seq[:, :-1], tgt_pos[:, :-1]
