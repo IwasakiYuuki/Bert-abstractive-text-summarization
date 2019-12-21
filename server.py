@@ -196,13 +196,12 @@ def summarize(data_loader):
     pred_lines = []
 
     # Prediction
-    with open(opt.output, 'w') as f:
-        for batch in tqdm(data_loader, mininterval=2, desc='  - (Test)', leave=False):
-            all_hyp, all_scores = translator.translate_batch(*batch)
-            for idx_seqs in all_hyp:
-                for idx_seq in idx_seqs:
-                    pred_line = ''.join([data_loader.dataset.tgt_idx2word[idx] for idx in idx_seq])
-                    pred_lines.append(pred_line)
+    for batch in tqdm(data_loader, mininterval=2, desc='  - (Test)', leave=False):
+        all_hyp, all_scores = translator.translate_batch(*batch)
+        for idx_seqs in all_hyp:
+            for idx_seq in idx_seqs:
+                pred_line = ''.join([data_loader.dataset.tgt_idx2word[idx] for idx in idx_seq])
+                pred_lines.append(pred_line)
 
     return pred_lines
 
