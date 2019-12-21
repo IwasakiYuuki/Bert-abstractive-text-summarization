@@ -4,12 +4,12 @@ from transformer.Models import Decoder
 
 
 class AbstractiveTextSummarizationUsingBert(nn.Module):
-    def __init__(self, bert_model_dir, n_tgt_vocab, len_max_seq, d_word_vec=768, d_model=768, d_inner=3072,
+    def __init__(self, bert_model_path, n_tgt_vocab, len_max_seq, d_word_vec=768, d_model=768, d_inner=3072,
                  n_layers=12, n_head=12, d_k=64, d_v=64, dropout=0.1):
         super().__init__()
 
-        self.encoder = BertModel.from_pretrained(bert_model_dir)
-        self.config = BertConfig(bert_model_dir+'bert_config.json')
+        self.encoder = BertModel.from_pretrained(bert_model_path)
+        self.config = BertConfig(bert_model_path+'bert_config.json')
         self.decoder = Decoder(
             n_tgt_vocab=n_tgt_vocab, len_max_seq=len_max_seq,
             d_word_vec=d_word_vec, d_model=d_model, d_inner=d_inner,

@@ -211,7 +211,7 @@ def main():
 
     parser.add_argument('-data', required=True)
     parser.add_argument(
-        '-bert_model_dir',
+        '-bert_model_path',
         type=str,
         default=os.path.dirname(os.path.abspath(__file__))+'/data/checkpoint/'
     )

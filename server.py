@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(description='translate.py')
 parser.add_argument('-trained_model',
                     default=os.path.dirname(os.path.abspath(__file__)) + '/data/checkpoint/trained/trained_20191004.chkpt',
                     help='Path to model .pt file')
-parser.add_argument('-bert_model_dir',
+parser.add_argument('-bert_model_path',
                     default=os.path.dirname(os.path.abspath(__file__)) + '/data/checkpoint/',
                     help='Path to BERT model directory')
 parser.add_argument('-src', default=os.path.dirname(os.path.abspath(__file__)) + '/data/preprocessed_data.data',
