@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.utils.data
 import argparse
@@ -13,15 +14,13 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 parser = argparse.ArgumentParser(description='translate.py')
-parser.add_argument('-model', default='/workspace/Bert-abstractive-text-summarization/data/checkpoint/trained'
-                                      '/trained_20191004.chkpt',
+parser.add_argument('-model',
+                    default=os.path.dirname(os.path.abspath(__file__)) + '/data/checkpoint/trained/trained_20191004.chkpt',
                     help='Path to model .pt file')
-parser.add_argument('-src', default='/workspace/Bert-abstractive-text-summarization/data/preprocessed_data.data',
+parser.add_argument('-src', default=os.path.dirname(os.path.abspath(__file__)) + '/data/preprocessed_data.data',
                     help='Source sequence to decode (one line per sequence)')
-parser.add_argument('-vocab', default='/workspace/Bert-abstractive-text-summarization/data/checkpoint/vocab.txt',
+parser.add_argument('-vocab', default=os.path.dirname(os.path.abspath(__file__)) + '/data/checkpoint/vocab.txt',
                     help='Source sequence to decode (one line per sequence)')
-parser.add_argument('-output', default='pred.txt',
-                    help="""Path to output the predictions (each line will be the decoded sequence""")
 parser.add_argument('-beam_size', type=int, default=5,
                     help='Beam size')
 parser.add_argument('-batch_size', type=int, default=30,
@@ -29,6 +28,7 @@ parser.add_argument('-batch_size', type=int, default=30,
 parser.add_argument('-n_best', type=int, default=1,
                     help="""If verbose is set, will output the n_best decoded sentences""")
 parser.add_argument('-no_cuda', action='store_true')
+
 opt = parser.parse_args()
 opt.cuda = not opt.no_cuda
 
@@ -117,7 +117,7 @@ def tokenize(texts):
     for text in texts:
         splited_text = tokenizer.tokenize(_convert_num_half_to_full(text.replace('。\n', '\n').replace('\n', '。\n')))
         if len(splited_text) > (max_len - 2):
-            splited_text = splited_text[:max_len-2]
+            splited_text = splited_text[:max_len - 2]
         splited_texts.append(splited_text)
 
     return splited_texts
@@ -154,8 +154,8 @@ def text2token(texts):
 
     for text in texts:
         token = [Constants.BOS] + \
-             [data['dict']['src'].get(i, Constants.UNK) for i in text] + \
-             [Constants.EOS]
+                [data['dict']['src'].get(i, Constants.UNK) for i in text] + \
+                [Constants.EOS]
         tokens.append(token)
 
     return tokens

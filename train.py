@@ -2,6 +2,7 @@
 This script handling the training process.
 """
 
+import os
 import argparse
 import math
 import time
@@ -209,7 +210,11 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-data', required=True)
-    parser.add_argument('-bert_path', required=True)
+    parser.add_argument(
+        '-bert_model_dir',
+        type=str,
+        default=os.path.dirname(os.path.abspath(__file__))+'/data/checkpoint/'
+    )
 
     parser.add_argument('-epoch', type=int, default=10)
     parser.add_argument('-batch_size', type=int, default=64)
@@ -274,7 +279,7 @@ def main():
             betas=(0.9, 0.999), eps=1e-09),
         opt.d_model, opt.n_warmup_steps)
 
-    train(model, training_data, validation_data, optimizer, device ,opt)
+    train(model, training_data, validation_data, optimizer, device, opt)
 
 
 def prepare_dataloaders(data, opt):

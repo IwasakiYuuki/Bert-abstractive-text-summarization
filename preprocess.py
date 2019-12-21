@@ -1,14 +1,13 @@
 import io, sys
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 import sqlite3
 import argparse
 from tqdm import tqdm
 import pandas.io.sql as psql
 import transformer.Constants as Constants
 import torch
-#import MeCab
 from tokenizer import FullTokenizer
-#m = MeCab.Tagger('-Owakati')
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 
 def build_vocab(path_to_file):
     with open(path_to_file, encoding='utf-8') as f:
