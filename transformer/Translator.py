@@ -13,14 +13,14 @@ class Summarizer(object):
         self.opt = opt
         self.device = torch.device('cuda' if opt.cuda else 'cpu')
 
-        checkpoint = torch.load(opt.model)
+        checkpoint = torch.load(opt.trained_model)
         model_opt = checkpoint['settings']
         self.model_opt = model_opt
 
         model = AbstractiveTextSummarizationUsingBert(
-            model_opt.bert_model_dir,
-            model_opt.tgt_vocab_size,
-            model_opt.max_token_seq_len,
+            self.model_opt.bert_model_dir,
+            self.model_opt.tgt_vocab_size,
+            self.model_opt.max_token_seq_len,
             d_k=model_opt.d_k,
             d_v=model_opt.d_v,
             d_model=model_opt.d_model,
