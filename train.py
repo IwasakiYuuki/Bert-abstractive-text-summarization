@@ -261,9 +261,9 @@ def main():
 
     device = torch.device('cuda' if opt.cuda else 'cpu')
     model = AbstractiveTextSummarizationUsingBert(
-        opt.bert_path,
-        opt.tgt_vocab_size,
-        opt.max_token_seq_len,
+        bert_model_path=opt.bert_path,
+        n_tgt_vocab=opt.tgt_vocab_size,
+        len_max_seq=opt.max_token_seq_len,
         d_k=opt.d_k,
         d_v=opt.d_v,
         d_model=opt.d_model,

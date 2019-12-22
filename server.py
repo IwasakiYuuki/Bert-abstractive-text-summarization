@@ -13,7 +13,7 @@ import transformer.Constants as Constants
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
-parser = argparse.ArgumentParser(description='translate.py')
+parser = argparse.ArgumentParser(description='server.py')
 parser.add_argument('-trained_model',
                     default=os.path.dirname(os.path.abspath(__file__)) + '/data/checkpoint/trained/trained_20191004.chkpt',
                     help='Path to model .pt file')
