@@ -28,14 +28,14 @@ class Summarizer(object):
             d_inner=model_opt.d_inner_hid,
             n_layers=model_opt.n_layers,
             n_head=model_opt.n_head,
-            dropout=model_opt.dropout)
+            dropout=model_opt.dropout).to(self.device)
 
         model.load_state_dict(checkpoint['model'])
         print('[Info] Trained model state loaded.')
 
         model.word_prob_prj = nn.LogSoftmax(dim=1)
 
-        model = model.to(self.device)
+#        model = model.to(self.device)
 
         self.model = model
         self.model.eval()
