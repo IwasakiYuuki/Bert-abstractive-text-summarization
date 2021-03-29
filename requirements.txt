@@ -49,7 +49,7 @@ psutil==5.4.6
 ptyprocess==0.6.0
 pycosat==0.6.3
 pycparser==2.18
-Pygments==2.2.0
+Pygments==2.7.4
 pyknp==0.4.1
 pyOpenSSL==18.0.0
 PySocks==1.6.8
